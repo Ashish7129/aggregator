@@ -7,17 +7,24 @@ const order_source = process.env.ORDER_URL || "http://localhost:8082";
 
 app.get("/orderdetails/:userId", (req, res) => {
   var userId = req.params.userId;
+  console.log(`${user_source}/user/${userId}`);
   request(
-    user_source + "/user/" + userId,
+    `${user_source}/user/${userId}`,
     { json: true },
     (err, resp, body) => {
       console.log(body);
+      if (body == undefined) {
+        res.send({
+          error: "can't fetch user data"
+        });
+      }
       if (err || !body.name) {
         res.send({
           error: body.error,
           errorDesc: body.errorDescription
         });
       } else {
+        console.log(`${order_source}/orders/${userId}`);
         request(
           order_source + "/orders/" + userId,
           { json: true },
